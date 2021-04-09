@@ -1,0 +1,12 @@
+var Prom = new Promise((resolve, reject) -> {
+	console.log("test");
+});
+
+Prom.then(()->{
+	console.log("test");
+}
+		 )
+	.catch(()->{
+		console.log("test");
+	}
+		  )

@@ -1,0 +1,23 @@
+{
+  "name": "disbotjs",
+  "version": "1.0.0",
+  "description": "for my discord server(506)",
+  "main": "main.js",
+  "dependencies": {
+    "discord.js": "^12.5.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/506qqq/disBot.js.git"
+  },
+  "author": "506qqq",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/506qqq/disBot.js/issues"
+  },
+  "homepage": "https://github.com/506qqq/disBot.js#readme"
+}

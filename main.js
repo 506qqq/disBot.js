@@ -149,6 +149,8 @@ client.on('message', async msg => {
 	msgReceiver(msg);	
 });
 
-var server = http.createServer();
+var server = http.createServer((req, res) => {
+	res.statusCode = 200;
+});
 server.listen(process.env.PORT);
 client.login(token);

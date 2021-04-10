@@ -98,6 +98,7 @@ var msgReceiver = async function(msg) {
 		   .catch((e) => {
 			   msg.channel.send(`Database Error!\n\` ${e}\``)
 		   });
+		return;
 	}
 
 	
@@ -114,6 +115,7 @@ var msgReceiver = async function(msg) {
 			.then(() => db.query("DELETE FROM test"))
 			.then(() => msg.channel.send("どっかーん！！\n(全データを削除しました)"))
 			.catch(e => msg.channel.send(`Database Error!\n\` ${e}\``));
+		return;
 	}
 
 	
@@ -130,10 +132,12 @@ var msgReceiver = async function(msg) {
 				msg.channel.send(`操作完了\n\`\`\`json\n${res}\`\`\``)
 			})
 			.catch(e => msg.channel.send(`Database Error!\n\` ${e}\``))
+		return;
 	}
 
 	if(msgStr[0] === '!') {
 		msg.channel.send("えっ何そのコマンドは...(困惑)");
+		return;
 	}
 }
 

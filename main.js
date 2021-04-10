@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const pg = require('pg');
+var http = require('http');
 
 const client = new Discord.Client();
 
@@ -17,7 +18,7 @@ const db = new pg.Pool({
 });
 
 const StartsWith = function(strA, strB) {
-	strB = strB.substr(0, strA.length);
+	strA = strA.substr(0, strB.length);
 	if(strA === strB) {
 		return true;
 	}
@@ -149,5 +150,6 @@ client.on('message', async msg => {
 	msgReceiver(msg);	
 });
 
-
+var server = http.createServer();
+server.listen(process.env.PORT);
 client.login(token);

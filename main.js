@@ -17,14 +17,6 @@ const db = new pg.Pool({
 	}
 });
 
-const StartsWith = function(strA, strB) {
-	strA = strA.substr(0, strB.length);
-	if(strA === strB) {
-		return true;
-	}
-	return false;
-}
-
 const makeGetDataOrder = function(arg) {
 	var order = `SELECT * FROM test WHERE Key = '${arg}';`;
 	return order;
@@ -41,7 +33,7 @@ var msgReceiver = async function(msg) {
 	var command = args[0];
 
 	
-	if(StartsWith(command, "!ping")) {
+	if(command === "!ping") {
 		if(args.length != 1) {
 			msg.channel.send(msgInvailArgs);
 			return;
@@ -51,7 +43,7 @@ var msgReceiver = async function(msg) {
 	}
 
 	
-	if(StartsWith(command, "!sd")) {
+	if(command === "!sd") {
 		if(args.length != 1) {
 			msg.channel.send(msgInvailArgs);
 			return;
@@ -62,7 +54,7 @@ var msgReceiver = async function(msg) {
 	}
 
 	
-	if(StartsWith(command, "!getdb")) {
+	if(command === "!getdb") {
 		if(args.length != 2) {
 			msg.channel.send(msgInvailArgs);
 			return;
@@ -84,7 +76,7 @@ var msgReceiver = async function(msg) {
 	}
 
 	
-	if(StartsWith(command , "!adddb")) {
+	if(command === "!adddb") {
 		if(args.length != 3) {
 			msg.channel.send(msgInvailArgs);
 			return;
@@ -109,7 +101,7 @@ var msgReceiver = async function(msg) {
 	}
 
 	
-	if(StartsWith(command, "!deldb")) {
+	if(command === "!deldb") {
 		if(msg.author.id != 364699222706225156) {
 			msg.channel.send(msgNotEnoughPermission);
 			return;
@@ -125,20 +117,23 @@ var msgReceiver = async function(msg) {
 	}
 
 	
-	if(StartsWith(command, "!editdb")) {
+	if(command === "!editdb") {
 		if(msg.author.id != 364699222706225156) {
 			msg.channel.send(msgNotEnoughPermission);
 			return;
 		}
 		db.connect()
 			.then(() => db.query(msgStr.substr(7)))
-			.then(() => msg.channel.send("操作完了"))
+			.then((res) => {
+				res = res.rows;
+				res = JSON.stringify(res);
+				msg.channel.send(`操作完了\n\`\`\`json\n${res}\`\`\``)
+			})
 			.catch(e => msg.channel.send(`Database Error!\n\` ${e}\``))
 	}
 
-	
-	if(StartsWith(command, "!")) {
-		arg.channel.send("えっなにそのコマンドは...(困惑)");
+	if(msgStr[0] === '!') {
+		msg.channel.send("えっ何そのコマンドは...(困惑)");
 	}
 }
 

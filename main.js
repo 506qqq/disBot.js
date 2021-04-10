@@ -151,6 +151,8 @@ client.on('message', async msg => {
 
 var server = http.createServer((req, res) => {
 	res.statusCode = 200;
+	res.setHeader('Content-Type', 'text/plain');
+	res.end('An Erro Occuped!');
 });
 server.listen(process.env.PORT);
 client.login(token);

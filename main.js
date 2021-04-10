@@ -1,14 +1,143 @@
 const Discord = require('discord.js');
+const pg = require('pg');
+
 const client = new Discord.Client();
 
-let token = process.env.DISCORD_BOT_TOKEN;
+const dbURI = process.env.DISCORD_BOT_DB_URI;
+const token = process.env.DISCORD_BOT_TOKEN;
 
-var msgReceiver = async function(arg) {
-	if(arg.content === "!ping") {
-		arg.channel.send('pong');
+const msgInvailArgs = "つかいかたがちがいます！ｗｗｗｗｗｗｗｗｗｗ";
+const msgNotEnoughPermission = "……………キミ…………ターゲットロック…………したから………エクスぺリエント…………するから………………キミを………………ずっと…………ァハッ……♪";
+
+const db = new pg.Pool({
+	connectionString: dbURI,
+	ssl: {
+		rejectUnauthorized: false
 	}
-	if(arg.content === "!shutdown") {
+});
+
+const StartsWith = function(strA, strB) {
+	strB = strB.substr(0, strA.length);
+	if(strA === strB) {
+		return true;
+	}
+	return false;
+}
+
+const makeGetDataOrder = function(arg) {
+	var order = `SELECT * FROM test WHERE Key = '${arg}';`;
+	return order;
+}
+
+const makeInsertDataOrder = function(id, key, txt) {
+	var order = `INSERT INTO test VALUES ('${id}', '${key}', '${txt}')`;
+	return order;
+}
+
+var msgReceiver = async function(msg) {
+	var msgStr = msg.content;
+	var args = msgStr.split(' ');
+	var command = args[0];
+
+	
+	if(StartsWith(command, "!ping")) {
+		if(args.length != 1) {
+			msg.channel.send(msgInvailArgs);
+			return;
+		}
+		msg.channel.send('pong');
+		return;
+	}
+
+	
+	if(StartsWith(command, "!sd")) {
+		if(args.length != 1) {
+			msg.channel.send(msgInvailArgs);
+			return;
+		}
+		console.log("シャットダウンします...");
 		process.exit();
+		return;
+	}
+
+	
+	if(StartsWith(command, "!getdb")) {
+		if(args.length != 2) {
+			msg.channel.send(msgInvailArgs);
+			return;
+		}
+		db.connect()
+			.then(() => {
+				var q = makeGetDataOrder(args[1]);
+				return  db.query(q);
+			})
+			.then((res) => {
+				res = res.rows;
+				res = JSON.stringify(res);
+				msg.channel.send(`結果\n\`\`\`json\n${res}\`\`\``);
+			})
+			.catch((e) => {
+				msg.channel.send(`Database Error!\n\` ${e}\``);
+			});
+		return;
+	}
+
+	
+	if(StartsWith(command , "!adddb")) {
+		if(args.length != 3) {
+			msg.channel.send(msgInvailArgs);
+			return;
+		}
+		db.connect()
+		   .then(() => {
+			   return db.query("SELECT MAX(id) FROM test");
+		   })
+			.then((newid) => {
+				newid = newid.rows[0].max;
+				return makeInsertDataOrder(newid + 1, args[1], args[2]);
+		   })
+		   .then((q) => {
+			   db.query(q);
+		   })
+			.then(() => {
+				msg.channel.send("更新完了。");
+			})
+		   .catch((e) => {
+			   msg.channel.send(`Database Error!\n\` ${e}\``)
+		   });
+	}
+
+	
+	if(StartsWith(command, "!deldb")) {
+		if(msg.author.id != 364699222706225156) {
+			msg.channel.send(msgNotEnoughPermission);
+			return;
+		}
+		if(args.length != 1) {
+			msg.channel.send(msgInvailArgs);
+			return;
+		}
+		db.connect()
+			.then(() => db.query("DELETE FROM test"))
+			.then(() => msg.channel.send("どっかーん！！\n(全データを削除しました)"))
+			.catch(e => msg.channel.send(`Database Error!\n\` ${e}\``));
+	}
+
+	
+	if(StartsWith(command, "!editdb")) {
+		if(msg.author.id != 364699222706225156) {
+			msg.channel.send(msgNotEnoughPermission);
+			return;
+		}
+		db.connect()
+			.then(() => db.query(msgStr.substr(7)))
+			.then(() => msg.channel.send("操作完了"))
+			.catch(e => msg.channel.send(`Database Error!\n\` ${e}\``))
+	}
+
+	
+	if(StartsWith(command, "!")) {
+		arg.channel.send("えっなにそのコマンドは...(困惑)");
 	}
 }
 
@@ -19,5 +148,6 @@ client.on('ready', () => {
 client.on('message', async msg => {
 	msgReceiver(msg);	
 });
+
 
 client.login(token);

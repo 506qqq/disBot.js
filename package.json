@@ -4,7 +4,8 @@
   "description": "for my discord server(506)",
   "main": "main.js",
   "dependencies": {
-    "discord.js": "^12.5.3"
+    "discord.js": "^12.5.3",
+    "pg": "^8.5.1"
   },
   "devDependencies": {},
   "scripts": {

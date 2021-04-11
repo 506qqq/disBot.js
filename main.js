@@ -7,8 +7,13 @@ const client = new Discord.Client();
 const dbURI = process.env.DISCORD_BOT_DB_URI;
 const token = process.env.DISCORD_BOT_TOKEN;
 
+const masterUserID = 364699222706225156;
+
 const msgInvailArgs = "つかいかたがちがいます！ｗｗｗｗｗｗｗｗｗｗ";
 const msgNotEnoughPermission = "……………キミ…………ターゲットロック…………したから………エクスぺリエント…………するから………………キミを………………ずっと…………ァハッ……♪";
+const msgOnDelDB = "どっかーん！\n(データベースを全削除しました)";
+const queryDelDataOnTest = "DELETE FROM test";
+const queryFindMaxIdonTest = "SELECT MAX(id) FROM test";
 
 const db = new pg.Pool({
 	connectionString: dbURI,
@@ -29,7 +34,7 @@ const makeInsertDataOrder = function(id, key, txt) {
 
 var msgReceiver = async function(msg) {
 	var msgStr = msg.content;
-	var args = msgStr.split(' ');
+	var args = msgStr.split(/\s/);
 	var command = args[0];
 
 	
@@ -44,6 +49,10 @@ var msgReceiver = async function(msg) {
 
 	
 	if(command === "!sd") {
+		if(msg.author.id === masterUserID) {
+			msg.channel.send(msgNotEnoughPermission);
+			return;
+		}
 		if(args.length != 1) {
 			msg.channel.send(msgInvailArgs);
 			return;
@@ -55,7 +64,7 @@ var msgReceiver = async function(msg) {
 
 	
 	if(command === "!getdb") {
-		if(args.length != 2) {
+		if(args.length !== 2) {
 			msg.channel.send(msgInvailArgs);
 			return;
 		}
@@ -77,13 +86,13 @@ var msgReceiver = async function(msg) {
 
 	
 	if(command === "!adddb") {
-		if(args.length != 3) {
+		if(args.length !== 3) {
 			msg.channel.send(msgInvailArgs);
 			return;
 		}
 		db.connect()
 		   .then(() => {
-			   return db.query("SELECT MAX(id) FROM test");
+			   return db.query(queryFindMaxIdOnTest);
 		   })
 			.then((newid) => {
 				newid = newid.rows[0].max;
@@ -103,24 +112,24 @@ var msgReceiver = async function(msg) {
 
 	
 	if(command === "!deldb") {
-		if(msg.author.id != 364699222706225156) {
+		if(msg.author.id !== masterUserID) {
 			msg.channel.send(msgNotEnoughPermission);
 			return;
 		}
-		if(args.length != 1) {
+		if(args.length !== 1) {
 			msg.channel.send(msgInvailArgs);
 			return;
 		}
 		db.connect()
-			.then(() => db.query("DELETE FROM test"))
-			.then(() => msg.channel.send("どっかーん！！\n(全データを削除しました)"))
+			.then(() => db.query(queryDelDataOnTest))
+			.then(() => msg.channel.send(msgOnDelDB))
 			.catch(e => msg.channel.send(`Database Error!\n\` ${e}\``));
 		return;
 	}
 
 	
 	if(command === "!editdb") {
-		if(msg.author.id != 364699222706225156) {
+		if(msg.author.id !== masterUserID) {
 			msg.channel.send(msgNotEnoughPermission);
 			return;
 		}
@@ -152,7 +161,8 @@ client.on('message', async msg => {
 var server = http.createServer((req, res) => {
 	res.statusCode = 200;
 	res.setHeader('Content-Type', 'text/plain');
-	res.end('An Erro Occuped!');
+	res.end('200 なにもありませんよ');
 });
+
 server.listen(process.env.PORT);
 client.login(token);

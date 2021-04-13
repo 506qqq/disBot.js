@@ -33,6 +33,14 @@ const makeInsertDataOrder = function(id, key, txt) {
 	return order;
 }
 
+const notEnoughPermission = function(msg) {
+	if(msg.author.id != masterUserID) {
+		return true;
+	}
+	return false;
+}
+
+
 var msgReceiver = async function(msg) {
 	var msgStr = msg.content;
 	var args = msgStr.split(/\s/);
@@ -50,7 +58,7 @@ var msgReceiver = async function(msg) {
 
 	
 	if(command === "!sd") {
-		if(msg.author.id === masterUserID) {
+		if(notEnoughPermission(msg)) {
 			msg.channel.send(msgNotEnoughPermission);
 			return;
 		}
@@ -113,7 +121,7 @@ var msgReceiver = async function(msg) {
 
 	
 	if(command === "!deldb") {
-		if(msg.author.id !== masterUserID) {
+		if(notEnoughPermission(msg)) {
 			msg.channel.send(msgNotEnoughPermission);
 			return;
 		}
@@ -130,7 +138,7 @@ var msgReceiver = async function(msg) {
 
 	
 	if(command === "!editdb") {
-		if(msg.author.id !== masterUserID) {
+		if(notEnoughPermission(msg)) {
 			msg.channel.send(msgNotEnoughPermission);
 			return;
 		}

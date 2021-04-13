@@ -12,6 +12,7 @@ const masterUserID = 364699222706225156;
 const msgInvailArgs = "つかいかたがちがいます！ｗｗｗｗｗｗｗｗｗｗ";
 const msgNotEnoughPermission = "……………キミ…………ターゲットロック…………したから………エクスぺリエント…………するから………………キミを………………ずっと…………ァハッ……♪";
 const msgOnDelDB = "どっかーん！\n(データベースを全削除しました)";
+const msgNotFoundCommands = "えっ何そのコマンドは...(困惑)";
 const queryDelDataOnTest = "DELETE FROM test";
 const queryFindMaxIdonTest = "SELECT MAX(id) FROM test";
 
@@ -145,7 +146,7 @@ var msgReceiver = async function(msg) {
 	}
 
 	if(msgStr[0] === '!') {
-		msg.channel.send("えっ何そのコマンドは...(困惑)");
+		msg.channel.send(msgNotFoundCommands);
 		return;
 	}
 }

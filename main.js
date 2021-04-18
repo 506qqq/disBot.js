@@ -14,7 +14,7 @@ const msgNotEnoughPermission = "……………キミ…………ターゲット
 const msgOnDelDB = "どっかーん！\n(データベースを全削除しました)";
 const msgNotFoundCommands = "えっ何そのコマンドは...(困惑)";
 const queryDelDataOnTest = "DELETE FROM test";
-const queryFindMaxIdonTest = "SELECT MAX(id) FROM test";
+const queryFindMaxIdOnTest = "SELECT MAX(id) FROM test";
 
 const db = new pg.Pool({
 	connectionString: dbURI,

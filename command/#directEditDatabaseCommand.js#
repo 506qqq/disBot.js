@@ -1,8 +1,0 @@
-const Discord = require('discord.js');
-
-//インスタンス作成禁止(抽象化ってどうやるの...(困惑))
-class BaseCommand() {
-	constructor(commandName, argLimit, arg) {
-		this.name = commandName;
-	}
-	

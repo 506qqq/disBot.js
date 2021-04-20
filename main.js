@@ -9,6 +9,14 @@ const token = process.env.DISCORD_BOT_TOKEN;
 
 const masterUserID = 364699222706225156;
 
+/*本番環境 ※Releaseブランチ*/
+//const serverID = 808294835848740865;
+//const joinMessageChannelID = 723054022847889451;a
+
+/*デバッグ環境 ※Developブランチ*/
+const serverID = 692774588995731530;
+const joinMessageChannelID = 723054022847889451;
+
 const msgInvailArgs = "つかいかたがちがいます！ｗｗｗｗｗｗｗｗｗｗ";
 const msgNotEnoughPermission = "……………キミ…………ターゲットロック…………したから………エクスぺリエント…………するから………………キミを………………ずっと…………ァハッ……♪";
 const msgOnDelDB = "どっかーん！\n(データベースを全削除しました)";
@@ -22,6 +30,7 @@ const db = new pg.Pool({
 		rejectUnauthorized: false
 	}
 });
+
 
 const makeGetDataOrder = function(arg) {
 	var order = `SELECT * FROM test WHERE Key = '${arg}';`;
@@ -153,16 +162,76 @@ var msgReceiver = async function(msg) {
 		return;
 	}
 
+	if(command === "!getdata") {
+		if(!(args.length == 1||args.length == 2)) {
+			msg.channel.send(msgNotEnoughPermission);
+			return;
+		}
+		let TargetUserID;
+		if(args.length == 1) {
+			TargetUserID = msg.author.id;
+		}
+		else {
+			TargetUserID = args[1];
+		}
+		db.connect()
+			.then(() => db.query(getQueryFindUserData(TargetUserID)))
+			.then((res) => {
+				res = res.rows;
+				res = JSON.stringify(res);
+				msg.channel.send(`操作完了\n\`\`\`json\n${res}\`\`\``);
+			})
+			.catch(e => msg.channel.send(`Database Error!\n\` ${e}\``))
+	}
+
+	if(command === "!testJoinmsg") {
+		if(notEnoughPermission(msg)) {
+			msg.channel.send(msgNotEnoughPermission);
+			return;
+		}
+		joinEventExecuter(msg.author);
+		return;
+	}
 	if(msgStr[0] === '!') {
 		msg.channel.send(msgNotFoundCommands);
 		return;
 	}
 }
 
+const joinEventExecuter = function(usr) {
+	client.guilds.fetch(serverID)
+		.then((server) => {
+			console.log(server.iconURL);
+			client.channels.fetch("723054022847889451")
+				.then(ch => {
+					ch.send({embed: {
+						author: {
+							name: server.name,
+							icon_url: server.iconURL
+						},
+						fields: [
+							{
+								name: "Welcome!!!",
+								value: "welcome to the underground(暗黒微笑)"
+							}
+						],
+						color: 0x114514
+					}
+							})
+				}
+					 )
+				.catch((e) => console.error(e));
+		})
+		.catch((e) => {console.log("えらー");console.error(e);});
+}
+
 client.on('ready', () => {
 	console.log(`${client.user.tag} でログインしています。`);
 });
 
+client.on('guildMemverAdd', async usr => {
+	joinEventExecuter(usr);
+});
 client.on('message', async msg => {
 	msgReceiver(msg);	
 });
